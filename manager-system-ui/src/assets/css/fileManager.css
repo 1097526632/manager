@@ -1,0 +1,105 @@
+.ufui-btn-toolbar{
+  display:flex;
+}
+.ufui-btn{
+  color:#409eff;
+  font-size: 25px;
+  padding: 0 5px;
+  display: inline-block;
+  cursor: pointer;
+}
+.separater{
+  display: inline-block;
+  width: 1px;
+  height: 30px;
+  background: #ccc;
+  margin:0 5px;
+}
+
+.index-wrapper{
+  height:100%;
+}
+.el-container{
+  height:calc(100% - 15px);
+}
+.file-list{
+  height: calc(100% - 86px);
+  overflow:auto;
+}
+.el-header,.el-main{
+  padding:0;
+}
+.el-header{
+  border-bottom: 1px solid #ccc;
+}
+.el-aside{
+  border-right: 1px solid #ccc;
+}
+.uploader-icon {
+  font-size: 28px;
+  color: #8c939d;
+  width: 80px;
+  height: 80px;
+  line-height: 80px;
+  text-align: center;
+}
+.el-upload {
+  border: 1px dashed #d9d9d9;
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+.el-upload:hover {
+  border-color: #409EFF;
+}
+.el-tree{
+  height:100%;
+}
+
+.file-info{
+  width:120px;
+  height:150px;
+  border:2px solid #ccc;
+  border-radius: 5px;
+  float:left;
+  margin:5px;
+  list-style: none;
+  background: #fff;
+}
+.file-info.active{
+  border:2px solid #409eff;
+}
+.file-icon{
+  width:120px;
+  height:120px;
+  font-size: 100px;
+  text-align: center;
+  line-height: 120px;
+  color:#409eff;
+}
+.file-icon img{
+  width:120px;
+  height:120px;
+}
+.file-list ul,.file-list li{
+  list-style: none;
+}
+.file-info .name{
+  width:120px;
+  height:30px;
+  line-height:30px;
+  overflow:hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+  border-top:1px solid #ccc;
+}
+.category-menu{
+  position: absolute;
+  top:0;
+  left:0;
+  width: 200px;
+  height:80px;
+  background: #cccccc;
+}
+
