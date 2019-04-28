@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.manage.system.modules.sys.dao.SysFileInfoDao">
+
+    <!-- 根据ID获得SysFileInfo -->
+    <select id="get" resultType="SysFileInfo">
+        SELECT *
+        FROM  sys_file_info a
+        WHERE a.id = #{id}
+    </select>
+
+    <!-- 分页查询信息 -->
+    <select id="findList" resultType="SysFileInfo">
+        select a.* from (
+        select ID,CATEGORY_ID,`NAME`,EXT_TYPE,REAL_NAME,FILE_SIZE,FILE_TYPE,'file' as type,CREATE_DATE,UPDATE_DATE from sys_file_info b where DEL_FLAG='0'
+        and b.CREATE_BY = #{createBy}
+        <if test="categoryId !=null and categoryId !=''">
+            and b.CATEGORY_ID =#{categoryId}
+        </if>
+        <if test="fileType !=null and fileType !='' ">
+            and b.FILE_TYPE=#{fileType}
+        </if>
+        UNION
+        select ID,PARENT_ID,`NAME`,NULL,NULL,null,NULL,'category' as type,NULL,UPDATE_DATE from sys_file_category a where DEL_FLAG='0'
+        and a.CREATE_BY = #{createBy}
+        <if test="categoryId !=null and categoryId !=''">
+            and a.PARENT_ID =#{categoryId}
+        </if>
+        )a ORDER BY a.type,a.UPDATE_DATE DESC
+    </select>
+
+    <!-- 插入信息 -->
+    <insert id="insert">
+        INSERT INTO sys_file_info(
+        ID,
+        CATEGORY_ID,
+        NAME,
+        EXT_TYPE,
+        FILE_TYPE,
+        REAL_NAME,
+        FILE_SIZE,
+        CSS_CLASS,
+        DEL_FLAG,
+        REMARKS,
+        CREATE_BY,
+        CREATE_DATE,
+        UPDATE_BY,
+        UPDATE_DATE
+        ) VALUES (
+        #{id},
+        #{categoryId},
+        #{name},
+        #{extType},
+        #{fileType},
+        #{realName},
+        #{fileSize},
+        #{cssClass},
+        #{delFlag},
+        #{remarks},
+        #{createBy},
+        #{createDate},
+        #{updateBy},
+        #{updateDate}
+        )
+    </insert>
+
+    <!-- 更新信息 -->
+    <update id="update">
+        UPDATE  sys_file_info SET
+        CATEGORY_ID = #{categoryId},
+        NAME = #{name},
+        EXT_TYPE = #{extType},
+        FILE_TYPE = #{fileType},
+        REAL_NAME = #{realName},
+        FILE_SIZE = #{fileSize},
+        CSS_CLASS = #{cssClass},
+        DEL_FLAG = #{delFlag},
+        REMARKS = #{remarks},
+        UPDATE_BY = #{updateBy},
+        UPDATE_DATE = #{updateDate}
+        WHERE id = #{id}
+    </update>
+
+    <!-- 逻辑删除 -->
+    <update id="delete">
+        UPDATE sys_file_info SET
+        del_flag = '1'
+        WHERE id = #{id}
+    </update>
+
+</mapper>

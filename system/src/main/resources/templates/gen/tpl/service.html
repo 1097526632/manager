@@ -1,0 +1,24 @@
+package ${package}.service;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import ${package}.dao.${sys("strutils.toCapitalizeCamelCase",tableName)}Dao;
+import ${package}.entity.${sys("strutils.toCapitalizeCamelCase",tableName)};
+import com.manage.system.modules.sys.service.SystemBaseService;
+import org.springframework.stereotype.Service;
+
+/**
+* ${tableComment}服务
+*/
+@Service
+public class ${sys("strutils.toCapitalizeCamelCase",tableName)}Service extends SystemBaseService<${sys("strutils.toCapitalizeCamelCase",tableName)}Dao, ${sys("strutils.toCapitalizeCamelCase",tableName)}> {
+
+    private ${sys("strutils.toCapitalizeCamelCase",tableName)}Dao ${sys("strutils.toCamelCase",tableName)}Dao;
+
+    @Autowired
+    protected void setDao(${sys("strutils.toCapitalizeCamelCase",tableName)}Dao ${sys("strutils.toCamelCase",tableName)}Dao) {
+        super.setDao(${sys("strutils.toCamelCase",tableName)}Dao);
+        this.${sys("strutils.toCamelCase",tableName)}Dao=${sys("strutils.toCamelCase",tableName)}Dao;
+    }
+
+
+}

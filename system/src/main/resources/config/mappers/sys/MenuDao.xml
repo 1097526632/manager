@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.manage.system.modules.sys.dao.MenuDao">
+
+	<!-- 根据编号获得用户 -->
+	<select id="get" resultType="SysMenu">
+		SELECT *
+		FROM SYS_MENU a
+		WHERE a.id = #{id}
+	</select>
+
+	<!-- 分页查询用户信息 -->
+	<select id="findList" resultType="SysMenu">
+		SELECT *
+		FROM SYS_MENU a
+		WHERE a.DEL_FLAG='0'
+		<if test="parentId !=null and parentId !='' ">
+			and a.PARENT_ID=#{parentId}
+		</if>
+		<if test="name !=null and name !='' ">
+			and a.NAME like '%${name}%'
+		</if>
+		<if test="isShow !=null and isShow != ''">
+			and IS_SHOW=#{isShow}
+		</if>
+	</select>
+
+	<select id="loadUserMenu" resultType="SysMenu">
+		<choose>
+			<when test="id!=null and 'u_01'.toString()==id">
+				SELECT a.*
+				FROM SYS_MENU a
+				where DEL_FLAG='0'
+			</when>
+			<otherwise>
+				SELECT a.*
+				FROM SYS_MENU a INNER JOIN sys_role_menu b on a.ID=b.MENU_ID
+				INNER JOIN sys_user_role c on c.ROLE_ID=b.ROLE_ID
+				INNER JOIN sys_user su on su.ID=c.USER_ID
+				WHERE a.DEL_FLAG='0'
+				AND su.DEL_FLAG = '0'
+				AND su.LOGIN_FLAG='1'
+				AND c.USER_ID=#{id}
+				GROUP BY a.ID
+			</otherwise>
+		</choose>
+	</select>
+
+	<!-- 插入用户 -->
+	<insert id="insert">
+		INSERT INTO SYS_MENU(
+			ID,
+			PARENT_ID,
+			PARENT_IDS,
+			NAME,
+			SORT,
+			HREF,
+			ICON,
+			IS_SHOW,
+			PERMISSION,
+			CREATE_BY,
+			CREATE_DATE,
+			UPDATE_BY,
+			UPDATE_DATE,
+			REMARKS,
+			DEL_FLAG
+		) VALUES (
+			#{id},
+			#{parentId},
+			#{parentIds},
+			#{name},
+			#{sort},
+			#{href},
+			#{icon},
+			#{isShow},
+			#{permission},
+			#{createBy},
+			#{createDate},
+			#{updateBy},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+
+	<!-- 更新用户 -->
+	<update id="update">
+		UPDATE SYS_MENU SET
+			PARENT_ID= #{parentId} ,
+			PARENT_IDS= #{parentIds} ,
+			NAME= #{name} ,
+			SORT= #{sort} ,
+			HREF= #{href} ,
+			ICON= #{icon} ,
+			IS_SHOW= #{isShow} ,
+			PERMISSION= #{permission} ,
+			UPDATE_BY= #{updateBy} ,
+			UPDATE_DATE= #{updateDate} ,
+			REMARKS= #{remarks}
+		WHERE id = #{id}
+	</update>
+
+	<!-- 逻辑删除用户 -->
+	<update id="delete">
+		UPDATE SYS_MENU SET
+			del_flag = '1'
+		WHERE id = #{id}
+	</update>
+
+	<update id="deleteSubMenu">
+		UPDATE SYS_MENU SET
+			del_flag = '1'
+		WHERE PARENT_IDS LIKE '${updateParentIds}%'
+	</update>
+
+	<update id="updateParentIds">
+		UPDATE SYS_MENU
+		SET PARENT_IDS = replace(PARENT_IDS,'${updateOldParentIds}','${updateNewParentIds}')
+		WHERE PARENT_IDS LIKE '${updateOldParentIds}%'
+	</update>
+
+</mapper>

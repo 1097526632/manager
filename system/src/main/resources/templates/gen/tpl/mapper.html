@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="${package}.dao.${sys("strutils.toCapitalizeCamelCase",tableName)}Dao">
+
+    <!-- 根据ID获得${tableComment} -->
+    <select id="get" resultType="${sys("strutils.toCapitalizeCamelCase",tableName)}">
+        SELECT *
+        FROM  ${tableName} a
+        WHERE a.id = #{id}
+    </select>
+
+    <!-- 分页查询信息 -->
+    <select id="findList" resultType="${sys("strutils.toCapitalizeCamelCase",tableName)}">
+        SELECT *
+        FROM ${tableName} a
+        WHERE a.DEL_FLAG='0'
+        <choose>
+            <when test="page!=null and page.orderByField!=null and page.orderByField!='' ">
+                order by \${page.orderByField}
+            </when>
+            <otherwise>
+                order by UPDATE_DATE DESC
+            </otherwise>
+        </choose>
+    </select>
+
+    <!-- 插入信息 -->
+    <insert id="insert">
+        INSERT INTO ${tableName}(
+        <% for(var c in allColumns ){ %>
+        <% if (cLP.last) {%>
+        ${c.columnName}
+        <%}else {%>
+        ${c.columnName},
+        <%}%>
+        <%}%>
+        ) VALUES (
+        <% for(var c in allColumns ){ %>
+        <% if (cLP.last) {%>
+        #{${c.propertyName}}
+        <%}else {%>
+        #{${c.propertyName}},
+        <%}%>
+        <%}%>
+        )
+    </insert>
+
+    <!-- 更新信息 -->
+    <update id="update">
+        UPDATE  ${tableName} SET
+        <% for(var c in allColumns ){ %>
+        <% if (strutil.toLowerCase(c.columnName) =='id' || strutil.toLowerCase(c.columnName) =='create_by'||strutil.toLowerCase(c.columnName) =='create_date'){
+         continue;
+        }%>
+        <% if (cLP.last) {%>
+        ${c.columnName} = #{${c.propertyName}}
+        <%}else {%>
+        ${c.columnName} = #{${c.propertyName}},
+        <%}%>
+        <%}%>
+        WHERE id = #{id}
+    </update>
+
+    <!-- 逻辑删除 -->
+    <update id="delete">
+        UPDATE ${tableName} SET
+        del_flag = '1'
+        WHERE id = #{id}
+    </update>
+
+</mapper>

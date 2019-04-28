@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.manage.system.modules.sys.dao.SysParamDao">
+
+    <!-- 根据ID获得系统参数表 -->
+    <select id="get" resultType="SysParam">
+        SELECT *
+        FROM  sys_param a
+        WHERE a.id = #{id}
+    </select>
+
+    <!-- 分页查询信息 -->
+    <select id="findList" resultType="SysParam">
+        SELECT *
+        FROM sys_param a
+        WHERE a.DEL_FLAG='0'
+        <if test="keyName!=null and keyName !='' ">
+            and (code like '%${keyName}%' or DESCRIPTION like '%${keyName}%')
+        </if>
+        <choose>
+            <when test="page!=null and page.orderByField!=null and page.orderByField!='' ">
+                order by ${page.orderByField}
+            </when>
+            <otherwise>
+                order by UPDATE_DATE DESC
+            </otherwise>
+        </choose>
+    </select>
+
+    <!-- 插入信息 -->
+    <insert id="insert">
+        INSERT INTO sys_param(
+        ID,
+        CODE,
+        VALUE,
+        DESCRIPTION,
+        TYPE,
+        CREATE_BY,
+        CREATE_DATE,
+        UPDATE_BY,
+        UPDATE_DATE
+        ) VALUES (
+        #{id},
+        #{code},
+        #{value},
+        #{description},
+        #{type},
+        #{createBy},
+        #{createDate},
+        #{updateBy},
+        #{updateDate}
+        )
+    </insert>
+
+    <!-- 更新信息 -->
+    <update id="update">
+        UPDATE  sys_param SET
+        CODE = #{code},
+        VALUE = #{value},
+        DESCRIPTION = #{description},
+        TYPE = #{type},
+        UPDATE_BY = #{updateBy},
+        UPDATE_DATE = #{updateDate}
+        WHERE id = #{id}
+    </update>
+
+    <!-- 逻辑删除 -->
+    <update id="delete">
+        UPDATE sys_param SET
+        del_flag = '1'
+        WHERE id = #{id}
+    </update>
+
+</mapper>

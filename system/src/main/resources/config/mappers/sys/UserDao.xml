@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.manage.system.modules.sys.dao.UserDao">
+
+	<!-- 根据编号获得用户 -->
+	<select id="get" resultType="SysUser">
+		SELECT *
+		FROM SYS_USER a
+		WHERE a.id = #{id}
+	</select>
+
+	<!-- 根据登录名查询用户 -->
+	<select id="getByUsername" resultType="SysUser" parameterType="SysUser">
+		SELECT *
+		FROM SYS_USER a
+		WHERE a.USERNAME = #{username} AND a.del_flag ='0' and a.LOGIN_FLAG='1'
+	</select>
+
+	<!-- 分页查询用户信息 -->
+	<select id="findList" resultType="SysUser">
+		SELECT a.*,off.name as officeName
+		FROM SYS_USER a inner join sys_office off on a.OFFICE_ID=off.id
+		WHERE a.DEL_FLAG='0'
+		<if test="officeId!=null and officeId !='' ">
+		 and ( off.PARENT_IDS like '%${officeId}%' or off.ID='${officeId}')
+		</if>
+		<if test="keyName !=null and keyName !=''">
+			and  (a.NAME like '%${keyName}%' or a.USERNAME like '%${keyName}%')
+		</if>
+		<choose>
+			<when test="page!=null and page.orderByField!=null and  page.orderByField!=''">
+				ORDER BY ${page.orderByField}
+			</when>
+			<otherwise>
+				ORDER BY UPDATE_DATE DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<!-- 插入用户 -->
+	<insert id="insert">
+		INSERT INTO SYS_USER(
+			id,
+			office_id,
+			username,
+			password,
+			no,
+			name,
+			email,
+			mobile,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			login_flag,
+			photo,
+			del_flag
+		) VALUES (
+			#{id},
+			#{officeId},
+			#{username},
+			#{password},
+			#{no},
+			#{name},
+			#{email},
+			#{mobile},
+			#{createBy},
+			#{createDate},
+			#{updateBy},
+			#{updateDate},
+			#{remarks},
+			#{loginFlag},
+			#{photo},
+			#{delFlag}
+		)
+	</insert>
+
+	<!-- 更新用户 -->
+	<update id="update">
+		UPDATE SYS_USER SET
+		<if test="password!=null and password !='' ">
+			password = #{password},
+		</if>
+		office_id=#{officeId},
+		no=#{no},
+		name=#{name},
+		login_flag=#{loginFlag},
+		email = #{email},
+		mobile = #{mobile},
+		update_by = #{updateBy},
+		update_date = #{updateDate},
+		remarks = #{remarks},
+		photo = #{photo},
+		PERSONALITY=#{personality}
+		WHERE id = #{id}
+	</update>
+
+	<!-- 更新用户密码 -->
+	<update id="updatePasswordById">
+		UPDATE SYS_USER SET
+			password = #{password}
+		WHERE id = #{id}
+	</update>
+
+	<!-- 更新登录信息，如登录IP、登录时间 -->
+	<update id="updateLoginInfo">
+		UPDATE SYS_USER SET
+			login_ip = #{loginIp},
+			login_Date = #{loginDate}
+		WHERE id = #{id}
+	</update>
+
+	<update id="updatePersonality">
+			UPDATE SYS_USER SET
+			  PERSONALITY=#{personality}
+			where ID=#{id}
+	</update>
+
+	<!-- 逻辑删除用户 -->
+	<update id="delete">
+		UPDATE SYS_USER SET
+			del_flag = '1'
+		WHERE id = #{id}
+	</update>
+
+</mapper>

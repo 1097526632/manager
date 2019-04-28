@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.manage.system.modules.sys.dao.SysFileCategoryDao">
+
+    <!-- 根据ID获得SysFileCategory -->
+    <select id="get" resultType="SysFileCategory">
+        SELECT *
+        FROM  sys_file_category a
+        WHERE a.id = #{id}
+    </select>
+
+    <!-- 分页查询信息 -->
+    <select id="findList" resultType="SysFileCategory">
+        SELECT *
+        FROM sys_file_category a
+        WHERE a.DEL_FLAG='0'
+        and a.CREATE_BY = #{createBy}
+        <if test="parentId !=null and parentIds !=''">
+            and a.PARENT_ID =#{parentId}
+        </if>
+        <choose>
+            <when test="page!=null and page.orderByField!=null and page.orderByField!='' ">
+                order by ${page.orderByField}
+            </when>
+            <otherwise>
+                order by UPDATE_DATE DESC
+            </otherwise>
+        </choose>
+    </select>
+
+    <!-- 插入信息 -->
+    <insert id="insert">
+        INSERT INTO sys_file_category(
+        ID,
+        PARENT_ID,
+        PARENT_IDS,
+        NAME,
+        PARENT_NAMES,
+        CREATE_BY,
+        CREATE_DATE,
+        UPDATE_BY,
+        UPDATE_DATE
+        ) VALUES (
+        #{id},
+        #{parentId},
+        #{parentIds},
+        #{name},
+        #{parentNames},
+        #{createBy},
+        #{createDate},
+        #{updateBy},
+        #{updateDate}
+        )
+    </insert>
+
+    <!-- 更新信息 -->
+    <update id="update">
+        UPDATE  sys_file_category SET
+        PARENT_ID = #{parentId},
+        PARENT_IDS = #{parentIds},
+        NAME = #{name},
+        PARENT_NAMES = #{parentNames},
+        UPDATE_BY = #{updateBy},
+        UPDATE_DATE = #{updateDate}
+        WHERE id = #{id}
+    </update>
+
+    <update id="updateSubCategory">
+        UPDATE  sys_file_category SET
+        PARENT_IDS=#{newParentIds},
+        PARENT_NAMES = #{newParentNames}
+        where PARENT_IDS like '%${id}%'
+    </update>
+
+    <!-- 逻辑删除 -->
+    <update id="delete">
+        UPDATE sys_file_category SET
+        del_flag = '1'
+        WHERE id = #{id}
+    </update>
+
+</mapper>

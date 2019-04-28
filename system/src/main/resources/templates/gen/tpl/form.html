@@ -1,0 +1,82 @@
+<template>
+    <el-dialog
+            :title="title"
+            :visible.sync="dialogVisible"
+            width="70%"
+            v-dialogDrag
+            @closed="closeFormDialog"
+            :close-on-click-modal="false"
+    >
+        <div class="form-wrapper">
+            <el-form ref="form" :model="form" :class="showFooter === false ?'view':''" :rules="rules"  label-width="80px">
+                <el-row>
+                    <% for(var c in columns ){ %>
+                    <el-col :span="12">
+                        <el-form-item label="${c.comment}:" prop="${c.propertyName}">
+                            <el-input v-model="form.${c.propertyName}"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <%}%>
+                </el-row>
+            </el-form>
+        </div>
+        <span slot="footer" class="dialog-footer" v-if="showFooter">
+            <el-button @click="dialogVisible = false">取 消</el-button>
+            <el-button type="primary" @click="confirmInfo()">确 定</el-button>
+        </span>
+    </el-dialog>
+</template>
+
+<script>
+import {saveInfo} from "@/assets/js/api/app_api";
+import {hasBtnPermission} from "@/assets/js/business/app_business";
+
+export default {
+    name: 'form',
+    data () {
+        return {
+            title: '',
+            dialogVisible: false,
+            showFooter: true,
+            form: {},
+            rules: {
+                <% for(var c in columns ){ %>
+                <% if (cLP.last) {%>
+                ${c.propertyName}: [
+                    {required: true, message: '请输入${c.comment}', trigger: 'blur'}
+                ]
+                <%}else{%>
+                ${c.propertyName}: [
+                    {required: true, message: '请输入${c.comment}', trigger: 'blur'}
+                ],
+                <%}}%>
+            }
+        }
+    },
+    methods: {
+        confirmInfo () {
+            saveInfo(this, 'form', '${module}/${sys("strutils.toCamelCase",tableName)}/save', this.form)
+        },
+        hasBtnPermission (key) {
+            return hasBtnPermission(key)
+        },
+        showDialog(title, visiable, data, footFlag) {
+            this.title = title
+            this.dialogVisible = visiable
+            this.form = Object.assign({}, data)
+            this.showFooter = footFlag? footFlag === 0 : true
+        },
+        closeFormDialog (){
+            this.$refs['form'].resetFields()
+        }
+    }
+}
+</script>
+
+<style scoped lang='scss'>
+    .form-wrapper{
+        min-height:300px;
+        height:100%;
+        padding:5px 10px;
+    }
+</style>

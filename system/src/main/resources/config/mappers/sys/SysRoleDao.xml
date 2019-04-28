@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.manage.system.modules.sys.dao.SysRoleDao">
+
+    <!-- 根据ID获得角色表 -->
+    <select id="get" resultType="SysRole">
+        SELECT *
+        FROM  sys_role a
+        WHERE a.id = #{id}
+    </select>
+
+    <!-- 分页查询信息 -->
+    <select id="findList" resultType="SysRole">
+        SELECT *
+        FROM sys_role a
+        WHERE a.DEL_FLAG='0'
+        <if test="keyName!=null and keyName !=''">
+            and a.NAME like '%${keyName}%'
+        </if>
+        order by UPDATE_DATE DESC
+    </select>
+
+    <!-- 插入信息 -->
+    <insert id="insert">
+        INSERT INTO sys_role(
+        ID,
+        NAME,
+        DATA_SCOPE,
+        IS_SYS,
+        USEABLE,
+        CREATE_BY,
+        CREATE_DATE,
+        UPDATE_BY,
+        UPDATE_DATE,
+        REMARKS,
+        DEL_FLAG
+        ) VALUES (
+        #{id},
+        #{name},
+        #{dataScope},
+        #{isSys},
+        #{useable},
+        #{createBy},
+        #{createDate},
+        #{updateBy},
+        #{updateDate},
+        #{remarks},
+        #{delFlag}
+        )
+    </insert>
+
+    <!-- 更新信息 -->
+    <update id="update">
+        UPDATE  sys_role SET
+        NAME = #{name},
+        DATA_SCOPE = #{dataScope},
+        IS_SYS = #{isSys},
+        USEABLE = #{useable},
+        UPDATE_BY = #{updateBy},
+        UPDATE_DATE = #{updateDate},
+        REMARKS = #{remarks},
+        DEL_FLAG = #{delFlag}
+        WHERE id = #{id}
+    </update>
+
+    <!-- 逻辑删除 -->
+    <update id="delete">
+        UPDATE sys_role SET
+        del_flag = '1'
+        WHERE id = #{id}
+    </update>
+
+    <update id="updateRoleMenuOffice">
+        delete from sys_role_menu where ROLE_ID = '${id}';
+        delete from sys_data_office where DATA_ID ='${id}';
+        <if test="menuDatas!=null and menuDatas.size>0">
+              insert into sys_role_menu(ROLE_ID,MENU_ID) values
+            <foreach collection="menuDatas" separator="," item="item" close=";">
+                ('${id}','${item.id}')
+          </foreach>
+        </if>
+        <if test="officeDatas!=null and officeDatas.size>0 and '9'.toString() == dataScope" >
+            insert into sys_data_office(DATA_ID,OFFICE_ID,TYPE) values
+            <foreach collection="officeDatas" separator="," item="item" close=";">
+                ('${id}','${item.id}','role')
+            </foreach>
+        </if>
+    </update>
+
+    <select id="loadRoleMenu" resultType="SysMenu">
+      select b.* from sys_role_menu a INNER JOIN sys_menu b on a.MENU_ID=b.ID where b.DEL_FLAG='0' and a.ROLE_ID=#{id}
+    </select>
+    <select id="loadRoleOffice" resultType="SysOffice">
+      select b.* from sys_data_office a INNER JOIN sys_office b on a.OFFICE_ID=b.ID where b.DEL_FLAG='0' and a.DATA_ID=#{id}
+    </select>
+
+    <select id="loadExistUser" resultType="SysUser">
+      select b.* from sys_user_role a INNER JOIN sys_user b on a.USER_ID=b.ID where b.DEL_FLAG='0' and a.ROLE_ID=#{id}
+    </select>
+
+    <insert id="saveRoleUser">
+        delete from sys_user_role where ROLE_ID ='${id}';
+        <if test="roleUsers!=null and roleUsers.size>0">
+            insert  into sys_user_role(USER_ID,ROLE_ID) VALUES
+            <foreach collection="roleUsers" item="item" separator=",">
+                ('${item.id}','${id}')
+            </foreach>
+        </if>
+    </insert>
+</mapper>

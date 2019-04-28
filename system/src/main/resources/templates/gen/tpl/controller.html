@@ -1,0 +1,52 @@
+package ${package}.web;
+
+import com.manage.system.core.entity.BaseResponse;
+import com.manage.system.modules.sys.web.SystemBaseController;
+import com.manage.system.core.security.RequirePermissions;
+import ${package}.entity.${sys("strutils.toCapitalizeCamelCase",tableName)};
+import ${package}.service.${sys("strutils.toCapitalizeCamelCase",tableName)}Service;
+import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+
+/**
+* ${tableComment}Controller
+*/
+@RestController
+@RequestMapping("\${app.auth.adminurl}/${module}/${sys("strutils.toCamelCase",tableName)}")
+public class ${sys("strutils.toCapitalizeCamelCase",tableName)}Controller extends SystemBaseController {
+
+    @Autowired
+    private ${sys("strutils.toCapitalizeCamelCase",tableName)}Service ${sys("strutils.toCamelCase",tableName)}Service;
+    /**
+    * 加载${tableComment}列表
+    * @param entity
+    * @return
+    */
+    @ApiOperation(value = "加载${tableComment}列表")
+    @RequirePermissions("view:${module}:${sys("strutils.toCamelCase",tableName)}")
+    @RequestMapping(value="loadList",method = RequestMethod.POST)
+    public BaseResponse list(@RequestBody ${sys("strutils.toCapitalizeCamelCase",tableName)} entity){
+        return new BaseResponse(BaseResponse.SUCCESS,"加载信息成功",${sys("strutils.toCamelCase",tableName)}Service.findPage(entity));
+    }
+
+    @ApiOperation(value = "保存${tableComment}信息")
+    @RequirePermissions("edit:${module}:${sys("strutils.toCamelCase",tableName)}")
+    @RequestMapping(value="save",method = RequestMethod.POST)
+    public BaseResponse save(@RequestBody ${sys("strutils.toCapitalizeCamelCase",tableName)} entity) throws Exception {
+        ${sys("strutils.toCamelCase",tableName)}Service.save(entity);
+        return new BaseResponse(BaseResponse.SUCCESS,"保存信息成功",entity);
+    }
+
+    @ApiOperation(value = "删除${tableComment}信息")
+    @RequirePermissions("del:${module}:${sys("strutils.toCamelCase",tableName)}")
+    @RequestMapping(value="delete",method = RequestMethod.POST)
+    public BaseResponse delete(@RequestBody ${sys("strutils.toCapitalizeCamelCase",tableName)} entity) throws Exception {
+        ${sys("strutils.toCamelCase",tableName)}Service.delete(entity);
+        return new BaseResponse(BaseResponse.SUCCESS,"删除信息成功",entity);
+    }
+}
+

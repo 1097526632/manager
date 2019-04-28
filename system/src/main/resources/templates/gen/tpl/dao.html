@@ -1,0 +1,13 @@
+package ${package}.dao;
+
+import ${package}.entity.${sys("strutils.toCapitalizeCamelCase",tableName)};
+import com.manage.system.modules.sys.dao.SystemBaseDao;
+import org.apache.ibatis.annotations.Mapper;
+
+/**
+* ${tableComment}Dao
+*/
+@Mapper
+public interface ${sys("strutils.toCapitalizeCamelCase",tableName)}Dao extends SystemBaseDao<${sys("strutils.toCapitalizeCamelCase",tableName)}> {
+
+}

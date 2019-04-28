@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.manage.system.modules.sys.dao.SysOfficeDao">
+
+    <!-- 根据ID获得机构表 -->
+    <select id="get" resultType="SysOffice">
+        SELECT *
+        FROM  sys_office a
+        WHERE a.id = #{id}
+    </select>
+
+    <!-- 分页查询信息 -->
+    <select id="findList" resultType="SysOffice">
+        SELECT *
+        FROM sys_office a
+        WHERE a.DEL_FLAG='0'
+        <if test="parentId!=null and parentId !='' ">
+            and a.PARENT_ID=#{parentId}
+        </if>
+        <if test="keyName !=null and keyName != ''">
+            and a.NAME like '%${keyName}%'
+        </if>
+    </select>
+
+    <select id="findOfficeUser" resultType="SysOffice">
+        select * from (select ID,PARENT_ID,`NAME`,true isParent,SORT from sys_office where DEL_FLAG='0'
+        UNION
+        SELECT ID,OFFICE_ID,`NAME`,false,1 FROM sys_user where DEL_FLAG='0'
+        ) t ORDER BY SORT
+    </select>
+
+    <!-- 插入信息 -->
+    <insert id="insert">
+        INSERT INTO sys_office(
+        ID,
+        PARENT_ID,
+        PARENT_IDS,
+        NAME,
+        SORT,
+        TYPE,
+        ADDRESS,
+        ZIP_CODE,
+        USEABLE,
+        CREATE_BY,
+        CREATE_DATE,
+        UPDATE_BY,
+        UPDATE_DATE,
+        REMARKS,
+        DEL_FLAG
+        ) VALUES (
+        #{id},
+        #{parentId},
+        #{parentIds},
+        #{name},
+        #{sort},
+        #{type},
+        #{address},
+        #{zipCode},
+        #{useable},
+        #{createBy},
+        #{createDate},
+        #{updateBy},
+        #{updateDate},
+        #{remarks},
+        #{delFlag}
+        )
+    </insert>
+
+    <!-- 更新信息 -->
+    <update id="update">
+        UPDATE  sys_office SET
+        PARENT_ID = #{parentId},
+        PARENT_IDS = #{parentIds},
+        NAME = #{name},
+        SORT = #{sort},
+        TYPE = #{type},
+        ADDRESS = #{address},
+        ZIP_CODE = #{zipCode},
+        USEABLE = #{useable},
+        UPDATE_BY = #{updateBy},
+        UPDATE_DATE = #{updateDate},
+        REMARKS = #{remarks},
+        DEL_FLAG = #{delFlag}
+        WHERE id = #{id}
+    </update>
+
+    <!-- 逻辑删除 -->
+    <update id="delete">
+        UPDATE sys_office SET
+        del_flag = '1'
+        WHERE id = #{id}
+    </update>
+
+    <update id="updateParentIds">
+        UPDATE sys_office set
+        PARENT_IDS=replace(PARENT_IDS,'${oldParentIds}','${newParentIds}')
+        where PARENT_IDS like '${oldParentIds}%'
+    </update>
+
+</mapper>

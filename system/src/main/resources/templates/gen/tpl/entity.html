@@ -1,0 +1,23 @@
+package ${package}.entity;
+
+import com.manage.system.modules.sys.entity.SystemBaseEntity;
+
+/**
+* ${tableComment}实体
+*/
+public class ${sys("strutils.toCapitalizeCamelCase",tableName)} extends SystemBaseEntity {
+
+<% for(var c in columns ){ %>
+    private String ${c.propertyName};		//  ${c.comment}
+<%}%>
+
+<% for(var c in columns ){ %>
+    public String get${sys("strutils.toCapitalizeCamelCase",c.columnName)}() {
+        return ${c.propertyName};
+    }
+
+    public void set${sys("strutils.toCapitalizeCamelCase",c.columnName)}(String ${c.propertyName}) {
+        this.${c.propertyName} = ${c.propertyName};
+    }
+<%}%>
+}

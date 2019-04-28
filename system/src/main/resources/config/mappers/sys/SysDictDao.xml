@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.manage.system.modules.sys.dao.SysDictDao">
+
+    <!-- 根据ID获得字典表 -->
+    <select id="get" resultType="SysDict">
+        SELECT *
+        FROM  sys_dict a
+        WHERE a.id = #{id}
+    </select>
+
+    <!-- 分页查询信息 -->
+    <select id="findList" resultType="SysDict">
+        SELECT *
+        FROM sys_dict a
+        WHERE a.DEL_FLAG='0'
+        <if test="keyName !=null and keyName!='' ">
+            and (
+            a.LABEL like '%${keyName}%'
+            or a.TYPE like '%${keyName}%'
+            or a.DESCRIPTION like '%${keyName}%'
+            )
+        </if>
+        <choose>
+            <when test="page!=null and page.orderByField!=null and page.orderByField!='' ">
+                order by ${page.orderByField}
+            </when>
+            <otherwise>
+                order by TYPE,CREATE_DATE
+            </otherwise>
+        </choose>
+    </select>
+
+    <!-- 插入信息 -->
+    <insert id="insert">
+        INSERT INTO sys_dict(
+        ID,
+        VALUE,
+        LABEL,
+        TYPE,
+        DESCRIPTION,
+        SORT,
+        PARENT_ID,
+        CREATE_BY,
+        CREATE_DATE,
+        UPDATE_BY,
+        UPDATE_DATE,
+        REMARKS,
+        DEL_FLAG
+        ) VALUES (
+        #{id},
+        #{value},
+        #{label},
+        #{type},
+        #{description},
+        #{sort},
+        #{parentId},
+        #{createBy},
+        #{createDate},
+        #{updateBy},
+        #{updateDate},
+        #{remarks},
+        #{delFlag}
+        )
+    </insert>
+
+    <!-- 更新信息 -->
+    <update id="update">
+        UPDATE  sys_dict SET
+        VALUE = #{value},
+        LABEL = #{label},
+        TYPE = #{type},
+        DESCRIPTION = #{description},
+        SORT = #{sort},
+        PARENT_ID = #{parentId},
+        UPDATE_BY = #{updateBy},
+        UPDATE_DATE = #{updateDate},
+        REMARKS = #{remarks},
+        DEL_FLAG = #{delFlag}
+        WHERE id = #{id}
+    </update>
+
+    <!-- 逻辑删除 -->
+    <update id="delete">
+        UPDATE sys_dict SET
+        del_flag = '1'
+        WHERE id = #{id}
+    </update>
+
+</mapper>

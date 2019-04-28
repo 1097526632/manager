@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.manage.system.modules.sys.dao.SysLogDao">
+
+    <!-- 根据ID获得日志表 -->
+    <select id="get" resultType="SysLog">
+        SELECT *
+        FROM  sys_log a
+        WHERE a.id = #{id}
+    </select>
+
+    <!-- 分页查询信息 -->
+    <select id="findList" resultType="SysLog">
+        SELECT a.*,user.name as createUserName
+        FROM sys_log a inner join sys_user user on a.CREATE_BY=user.ID
+        <where>
+            <if test="type!=null and type !='' ">
+                and a.TYPE=#{type}
+            </if>
+            <if test="createBy !=null and createBy != '' ">
+                AND a.create_by=#{createBy}
+            </if>
+            <if test="queryBeginDate!=null and queryBeginDate!='' ">
+                and a.CREATE_DATE>=#{queryBeginDate}
+            </if>
+            <if test="queryEndDate!=null and queryEndDate!='' ">
+                and a.CREATE_DATE &lt;= #{queryEndDate}
+            </if>
+            <if test="exception!=null and exception!='' ">
+                and a.EXCEPTION is not null
+            </if>
+        </where>
+        <choose>
+            <when test="page!=null and page.orderByField!=null and page.orderByField!='' ">
+                order by ${page.orderByField}
+            </when>
+            <otherwise>
+                order by CREATE_DATE DESC
+            </otherwise>
+        </choose>
+    </select>
+
+    <!-- 插入信息 -->
+    <insert id="insert">
+        INSERT INTO sys_log(
+        ID,
+        TYPE,
+        TITLE,
+        CREATE_BY,
+        CREATE_DATE,
+        REMOTE_ADDR,
+        USER_AGENT,
+        REQUEST_URI,
+        METHOD,
+        PARAMS,
+        RETURN_RESULT,
+        EXCEPTION,
+        TIMES
+        ) VALUES (
+        #{id},
+        #{type},
+        #{title},
+        #{createBy},
+        #{createDate},
+        #{remoteAddr},
+        #{userAgent},
+        #{requestUri},
+        #{method},
+        #{params},
+        #{returnResult},
+        #{exception},
+        #{times}
+        )
+    </insert>
+
+</mapper>
